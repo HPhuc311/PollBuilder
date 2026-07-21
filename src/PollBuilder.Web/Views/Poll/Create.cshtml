@@ -10,8 +10,6 @@
 
         <div class="col-lg-9">
 
-            <!-- Header -->
-
             <div class="text-center mb-5">
 
                 <span class="badge bg-primary px-3 py-2 mb-3">
@@ -19,28 +17,28 @@
                 </span>
 
                 <h1 class="fw-bold display-5">
-
                     Create a New Poll
-
                 </h1>
 
                 <p class="text-muted">
-
                     Create an online poll and share it with everyone instantly.
-
                 </p>
 
             </div>
-
-            <!-- Form -->
 
             <div class="card shadow-lg border-0 rounded-4">
 
                 <div class="card-body p-5">
 
-                    <form id="createPollForm" asp-action="Create" method="post">
+                    <form id="createPollForm"
+                          asp-action="Create"
+                          method="post">
 
                         @Html.AntiForgeryToken()
+
+                        <input asp-for="ActiveOptionalOptions"
+                               type="hidden"
+                               id="activeOptionalOptions" />
 
                         <div asp-validation-summary="ModelOnly"
                              class="text-danger mb-4">
@@ -75,8 +73,7 @@
                             <textarea asp-for="Description"
                                       rows="4"
                                       class="form-control"
-                                      placeholder="Short description (optional)">
-                            </textarea>
+                                      placeholder="Short description (optional)"></textarea>
 
                             <span asp-validation-for="Description"
                                   class="text-danger">
@@ -84,7 +81,7 @@
 
                         </div>
 
-                        <!-- Expired -->
+                        <!-- Expiration Date -->
 
                         <div class="mb-4">
 
@@ -93,7 +90,7 @@
                             </label>
 
                             <input id="expiredAt"
-                                asp-for="ExpiredAt"
+                                   asp-for="ExpiredAt"
                                    type="datetime-local"
                                    class="form-control" />
 
@@ -107,41 +104,66 @@
 
                         <div class="mb-3">
 
-                            <label class="form-label fw-bold">Options</label>
+                            <label class="form-label fw-bold">
+                                Options
+                            </label>
 
                             <div id="optionsContainer">
 
                                 <!-- Option 1 -->
+
                                 <div class="option-item card mb-3 p-3">
+
                                     <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <span class="option-title">Option 1</span>
+
+                                        <span class="option-title">
+                                            Option 1
+                                        </span>
+
                                     </div>
 
                                     <input asp-for="Option1"
                                            class="form-control"
                                            placeholder="Enter option..." />
-                                    <span asp-validation-for="Option1" class="text-danger small"></span>
+
+                                    <span asp-validation-for="Option1"
+                                          class="text-danger small">
+                                    </span>
+
                                 </div>
 
                                 <!-- Option 2 -->
+
                                 <div class="option-item card mb-3 p-3">
+
                                     <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <span class="option-title">Option 2</span>
+
+                                        <span class="option-title">
+                                            Option 2
+                                        </span>
+
                                     </div>
 
                                     <input asp-for="Option2"
                                            class="form-control"
                                            placeholder="Enter option..." />
-                                    <span asp-validation-for="Option2" class="text-danger small"></span>
+
+                                    <span asp-validation-for="Option2"
+                                          class="text-danger small">
+                                    </span>
+
                                 </div>
 
                                 <!-- Option 3 -->
+
                                 <div id="option3"
                                      class="option-item card mb-3 p-3 d-none">
 
                                     <div class="d-flex justify-content-between align-items-center mb-2">
 
-                                        <span class="option-title">Option 3</span>
+                                        <span class="option-title">
+                                            Option 3
+                                        </span>
 
                                         <button type="button"
                                                 class="btn btn-outline-danger btn-sm remove-option"
@@ -158,20 +180,24 @@
                                            placeholder="Enter option..." />
 
                                     <span asp-validation-for="Option3"
-                                          class="text-danger small"></span>
+                                          class="text-danger small">
+                                    </span>
 
                                 </div>
 
                                 <!-- Option 4 -->
+
                                 <div id="option4"
                                      class="option-item card mb-3 p-3 d-none">
 
                                     <div class="d-flex justify-content-between align-items-center mb-2">
 
-                                        <span class="option-title">Option 4</span>
+                                        <span class="option-title">
+                                            Option 4
+                                        </span>
 
                                         <button type="button"
-                                                class="btn btn-outline-danger btn-sm remove-option "
+                                                class="btn btn-outline-danger btn-sm remove-option"
                                                 data-target="Option4">
 
                                             <i class="bi bi-x-lg"></i>
@@ -185,17 +211,21 @@
                                            placeholder="Enter option..." />
 
                                     <span asp-validation-for="Option4"
-                                          class="text-danger small"></span>
+                                          class="text-danger small">
+                                    </span>
 
                                 </div>
 
                                 <!-- Option 5 -->
+
                                 <div id="option5"
                                      class="option-item card mb-3 p-3 d-none">
 
                                     <div class="d-flex justify-content-between align-items-center mb-2">
 
-                                        <span class="option-title">Option 5</span>
+                                        <span class="option-title">
+                                            Option 5
+                                        </span>
 
                                         <button type="button"
                                                 class="btn btn-outline-danger btn-sm remove-option"
@@ -212,16 +242,21 @@
                                            placeholder="Enter option..." />
 
                                     <span asp-validation-for="Option5"
-                                          class="text-danger small"></span>
+                                          class="text-danger small">
+                                    </span>
+
                                 </div>
 
                                 <!-- Option 6 -->
+
                                 <div id="option6"
                                      class="option-item card mb-3 p-3 d-none">
 
                                     <div class="d-flex justify-content-between align-items-center mb-2">
 
-                                        <span class="option-title">Option 6</span>
+                                        <span class="option-title">
+                                            Option 6
+                                        </span>
 
                                         <button type="button"
                                                 class="btn btn-outline-danger btn-sm remove-option"
@@ -238,7 +273,8 @@
                                            placeholder="Enter option..." />
 
                                     <span asp-validation-for="Option6"
-                                          class="text-danger small"></span>
+                                          class="text-danger small">
+                                    </span>
 
                                 </div>
 
@@ -249,7 +285,6 @@
                                     class="btn btn-outline-primary rounded-pill">
 
                                 <i class="bi bi-plus-circle"></i>
-
                                 Add Option
 
                             </button>
@@ -265,16 +300,15 @@
                                     onclick="goBack()">
 
                                 <i class="bi bi-arrow-left"></i>
-
                                 Back
 
                             </button>
 
                             <button type="submit"
+                                    id="btnCreatePoll"
                                     class="btn btn-primary px-5">
 
                                 <i class="bi bi-check-circle"></i>
-
                                 Create Poll
 
                             </button>
@@ -292,182 +326,609 @@
     </div>
 
 </div>
+
 @section Scripts
 {
     <partial name="_ValidationScriptsPartial" />
 
     <script>
 
-        const addButton = document.getElementById("btnAddOption");
+        $(function () {
 
-        const hiddenOptions = [
-            document.getElementById("option3"),
-            document.getElementById("option4"),
-            document.getElementById("option5"),
-            document.getElementById("option6")
-        ];
+            const form = $("#createPollForm");
 
-        let currentVisible = 2;
+            const addButton =
+                document.getElementById("btnAddOption");
 
-        // =========================
-        // Add Option
-        // =========================
-        addButton.addEventListener("click", function () {
+            const createButton =
+                document.getElementById("btnCreatePoll");
 
-            if (currentVisible >= 6) {
+            const activeOptionalOptionsInput =
+                document.getElementById(
+                    "activeOptionalOptions"
+                );
 
-                toastr.warning("Maximum 6 options.");
+            const expiredAtInput =
+                document.getElementById("expiredAt");
 
-                return;
-            }
+            const optionElements = {
+                Option3: document.getElementById("option3"),
+                Option4: document.getElementById("option4"),
+                Option5: document.getElementById("option5"),
+                Option6: document.getElementById("option6")
+            };
 
-            hiddenOptions[currentVisible - 2].classList.remove("d-none");
+            const optionalOptionOrder = [
+                "Option3",
+                "Option4",
+                "Option5",
+                "Option6"
+            ];
 
-          const input = hiddenOptions[currentVisible - 2].querySelector("input");
+            const activeOptionalOptions =
+                new Set();
 
-            input.setAttribute("required", "required");
+            // =====================================
+            // Khôi phục các option đang được mở
+            // =====================================
 
-                   $(input).rules("add", {
-            required: true,
-            messages: {
-                required: "Option is required."
-            }
-        });
+            const initialActiveOptions =
+                (activeOptionalOptionsInput?.value ?? "")
+                    .split(",")
+                    .map(function (value) {
+                        return value.trim();
+                    })
+                    .filter(function (value) {
+                        return optionalOptionOrder.includes(value);
+                    });
 
-        input.focus();
+            initialActiveOptions.forEach(function (property) {
 
-          // Reset lại validator
-        $("form").validate().resetForm();
+                activeOptionalOptions.add(property);
 
-            currentVisible++;
+                const optionDiv =
+                    optionElements[property];
 
-            if (currentVisible >= 6) {
+                if (!optionDiv) {
+                    return;
+                }
 
-                addButton.disabled = true;
+                const input =
+                    optionDiv.querySelector("input");
 
-            }
+                optionDiv.classList.remove("d-none");
 
-        });
-
-        // =========================
-        // Remove Option
-        // =========================
-        document.querySelectorAll(".remove-option").forEach(button => {
-            button.addEventListener("click", function () {
-
-                const property = this.dataset.target;
-
-                const optionDiv = document.getElementById(property.toLowerCase());
-
-                const input = optionDiv.querySelector("input");
-
-                input.value = "";
-
-                $(input).rules("remove");
-
-                $(input).removeClass("input-validation-error");
-
-                optionDiv.querySelector("span[data-valmsg-for]").innerHTML = "";
-
-                // Xóa rule Required
-                $(input).rules("remove", "required");
-
-                optionDiv.classList.add("d-none");
-
-                // Reset validator
-                $("form").validate().resetForm();
-
-                currentVisible--;
-
-                addButton.disabled = false;
-
+                addRequiredRule(
+                    input,
+                    property
+                );
             });
 
-        });
+            refreshAddButton();
+            updateMinDateTime();
 
+            // =====================================
+            // Thêm option
+            // =====================================
 
-        // =========================
-        // Server Validation
-        // =========================
-        @if (!ViewData.ModelState.IsValid)
-            {
-              foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-                 {
-                   <text>
-                       toastr.error("@Html.Raw(error.ErrorMessage)");
-                   </text>
-                 }
+            if (addButton) {
+
+                addButton.addEventListener(
+                    "click",
+                    function () {
+
+                        const nextProperty =
+                            optionalOptionOrder.find(
+                                function (property) {
+
+                                    return !activeOptionalOptions.has(
+                                        property
+                                    );
+                                }
+                            );
+
+                        if (!nextProperty) {
+
+                            showWarning(
+                                "Maximum 6 options."
+                            );
+
+                            return;
+                        }
+
+                        const optionDiv =
+                            optionElements[nextProperty];
+
+                        if (!optionDiv) {
+                            return;
+                        }
+
+                        const input =
+                            optionDiv.querySelector("input");
+
+                        optionDiv.classList.remove(
+                            "d-none"
+                        );
+
+                        activeOptionalOptions.add(
+                            nextProperty
+                        );
+
+                        addRequiredRule(
+                            input,
+                            nextProperty
+                        );
+
+                        updateActiveOptionalOptions();
+                        refreshAddButton();
+
+                        input.focus();
+                    }
+                );
             }
 
-        // =========================
-        // Go Back
-        // =========================
-        function goBack() {
+            // =====================================
+            // Xóa option
+            // =====================================
 
-            if (document.referrer !== "") {
+            document
+                .querySelectorAll(".remove-option")
+                .forEach(function (button) {
 
-                history.back();
+                    button.addEventListener(
+                        "click",
+                        function () {
 
+                            const property =
+                                this.dataset.target;
+
+                            const optionDiv =
+                                optionElements[property];
+
+                            if (!optionDiv) {
+                                return;
+                            }
+
+                            const input =
+                                optionDiv.querySelector(
+                                    "input"
+                                );
+
+                            input.value = "";
+
+                            removeRequiredRule(input);
+
+                            clearInputValidation(
+                                input,
+                                property
+                            );
+
+                            optionDiv.classList.add(
+                                "d-none"
+                            );
+
+                            activeOptionalOptions.delete(
+                                property
+                            );
+
+                            updateActiveOptionalOptions();
+                            refreshAddButton();
+                        }
+                    );
+
+                });
+
+            // =====================================
+            // Submit tạo Poll
+            // =====================================
+
+            form.on(
+                "submit",
+                function (event) {
+
+                    event.preventDefault();
+
+                    updateActiveOptionalOptions();
+
+                    if (!form.valid()) {
+
+                        focusFirstInvalidInput();
+
+                        showError(
+                            "Please complete all required fields."
+                        );
+
+                        return false;
+                    }
+
+                    if (createButton) {
+                        createButton.disabled = true;
+                    }
+
+                    $.ajax({
+                        url: form.attr("action"),
+                        type: "POST",
+                        data: form.serialize(),
+
+                        success: function (result) {
+
+                            if (!result.success) {
+
+                                showServerErrors(
+                                    result.errors
+                                );
+
+                                if (
+                                    !Array.isArray(result.errors) ||
+                                    result.errors.length === 0
+                                ) {
+                                    showError(
+                                        result.message
+                                        ?? "Please check the entered information."
+                                    );
+                                }
+
+                                return;
+                            }
+
+                            showSuccess(
+                                result.message
+                                ?? "Poll created successfully.",
+                                function () {
+
+                                    if (result.redirectUrl) {
+
+                                        window.location.href =
+                                            result.redirectUrl;
+                                    }
+                                }
+                            );
+                        },
+
+                        error: function (xhr) {
+
+                            console.error(
+                                "Create poll request failed:",
+                                xhr
+                            );
+
+                            showError(
+                                "An unexpected error occurred while creating the poll."
+                            );
+                        },
+
+                        complete: function () {
+
+                            if (createButton) {
+                                createButton.disabled = false;
+                            }
+                        }
+                    });
+
+                    return false;
+                }
+            );
+
+            // =====================================
+            // Thêm validation cho option
+            // =====================================
+
+            function addRequiredRule(
+                input,
+                property
+            ) {
+                if (!input) {
+                    return;
+                }
+
+                input.setAttribute(
+                    "required",
+                    "required"
+                );
+
+                $(input).rules("add", {
+                    required: true,
+                    maxlength: 100,
+
+                    messages: {
+                        required:
+                            `${getOptionLabel(property)} is required.`,
+
+                        maxlength:
+                            `${getOptionLabel(property)} cannot exceed 100 characters.`
+                    }
+                });
             }
-            else {
 
-                window.location.href = '@Url.Action("Index", "Home")';
+            // =====================================
+            // Xóa validation của option
+            // =====================================
 
+            function removeRequiredRule(input) {
+
+                if (!input) {
+                    return;
+                }
+
+                input.removeAttribute(
+                    "required"
+                );
+
+                $(input).rules(
+                    "remove",
+                    "required maxlength"
+                );
             }
 
-        }
-        document.addEventListener("DOMContentLoaded", () => {
+            // =====================================
+            // Xóa trạng thái lỗi
+            // =====================================
 
-            const input = document.getElementById("expiredAt");
+            function clearInputValidation(
+                input,
+                property
+            ) {
+                if (!input) {
+                    return;
+                }
+
+                $(input)
+                    .removeClass(
+                        "input-validation-error"
+                    )
+                    .removeAttr("aria-invalid")
+                    .removeAttr("aria-describedby");
+
+                const validationMessage =
+                    document.querySelector(
+                        `[data-valmsg-for="${property}"]`
+                    );
+
+                if (!validationMessage) {
+                    return;
+                }
+
+                validationMessage.textContent = "";
+
+                validationMessage.classList.remove(
+                    "field-validation-error"
+                );
+
+                validationMessage.classList.add(
+                    "field-validation-valid"
+                );
+            }
+
+            // =====================================
+            // Cập nhật danh sách option đang mở
+            // =====================================
+
+            function updateActiveOptionalOptions() {
+
+                if (!activeOptionalOptionsInput) {
+                    return;
+                }
+
+                activeOptionalOptionsInput.value =
+                    optionalOptionOrder
+                        .filter(function (property) {
+
+                            return activeOptionalOptions.has(
+                                property
+                            );
+                        })
+                        .join(",");
+            }
+
+            // =====================================
+            // Bật hoặc tắt nút Add Option
+            // =====================================
+
+            function refreshAddButton() {
+
+                if (!addButton) {
+                    return;
+                }
+
+                addButton.disabled =
+                    activeOptionalOptions.size >= 4;
+            }
+
+            // =====================================
+            // Focus vào ô lỗi đầu tiên
+            // =====================================
+
+            function focusFirstInvalidInput() {
+
+                const firstInvalidInput =
+                    form.find(
+                        ".input-validation-error:visible"
+                    ).first();
+
+                if (firstInvalidInput.length) {
+
+                    firstInvalidInput.trigger(
+                        "focus"
+                    );
+                }
+            }
+
+            // =====================================
+            // Hiển thị lỗi server
+            // =====================================
+
+            function showServerErrors(errors) {
+
+                if (
+                    !Array.isArray(errors) ||
+                    errors.length === 0
+                ) {
+                    return;
+                }
+
+                const firstError =
+                    errors.find(function (message) {
+
+                        return Boolean(message);
+                    });
+
+                if (firstError) {
+                    showError(firstError);
+                }
+            }
+
+            // =====================================
+            // Tạo tên hiển thị Option
+            // =====================================
+
+            function getOptionLabel(property) {
+
+                return property.replace(
+                    "Option",
+                    "Option "
+                );
+            }
+
+            // =====================================
+            // Ngày hết hạn tối thiểu
+            // =====================================
 
             function updateMinDateTime() {
+
+                if (!expiredAtInput) {
+                    return;
+                }
 
                 const now = new Date();
 
                 now.setSeconds(0);
                 now.setMilliseconds(0);
 
-                const year = now.getFullYear();
-                const month = String(now.getMonth() + 1).padStart(2, '0');
-                const day = String(now.getDate()).padStart(2, '0');
-                const hour = String(now.getHours()).padStart(2, '0');
-                const minute = String(now.getMinutes()).padStart(2, '0');
+                const year =
+                    now.getFullYear();
 
-                input.min = `${year}-${month}-${day}T${hour}:${minute}`;
+                const month =
+                    String(
+                        now.getMonth() + 1
+                    ).padStart(2, "0");
+
+                const day =
+                    String(
+                        now.getDate()
+                    ).padStart(2, "0");
+
+                const hour =
+                    String(
+                        now.getHours()
+                    ).padStart(2, "0");
+
+                const minute =
+                    String(
+                        now.getMinutes()
+                    ).padStart(2, "0");
+
+                expiredAtInput.min =
+                    `${year}-${month}-${day}T${hour}:${minute}`;
             }
 
-            updateMinDateTime();
+            // =====================================
+            // Toast cảnh báo
+            // =====================================
 
-        });
+            function showWarning(message) {
 
-        $("#createPollForm").submit(function (e) {
-
-            e.preventDefault();
-
-            $.post(
-                $(this).attr("action"),
-                $(this).serialize(),
-                function (result) {
+                if (typeof Swal !== "undefined") {
 
                     Swal.fire({
                         toast: true,
                         position: "top-end",
-                        icon: result.success ? "success" : "error",
-                        title: result.message,
+                        icon: "warning",
+                        title: message,
                         showConfirmButton: false,
-                        timer: 1000
-                    }).then(() => {
-
-                        if (result.success) {
-                            window.location.href = result.redirectUrl;
-                        }
-
+                        timer: 2500
                     });
 
+                    return;
                 }
-            );
+
+                alert(message);
+            }
+
+            // =====================================
+            // Toast lỗi
+            // =====================================
+
+            function showError(message) {
+
+                if (typeof Swal !== "undefined") {
+
+                    Swal.fire({
+                        toast: true,
+                        position: "top-end",
+                        icon: "error",
+                        title: message,
+                        showConfirmButton: false,
+                        timer: 2500
+                    });
+
+                    return;
+                }
+
+                alert(message);
+            }
+
+            // =====================================
+            // Toast thành công
+            // =====================================
+
+            function showSuccess(
+                message,
+                onClosed
+            ) {
+                if (typeof Swal !== "undefined") {
+
+                    Swal.fire({
+                        toast: true,
+                        position: "top-end",
+                        icon: "success",
+                        title: message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(function () {
+
+                        if (onClosed) {
+                            onClosed();
+                        }
+                    });
+
+                    return;
+                }
+
+                alert(message);
+
+                if (onClosed) {
+                    onClosed();
+                }
+            }
 
         });
+
+        // =====================================
+        // Nút Back
+        // =====================================
+
+        function goBack() {
+
+            if (document.referrer !== "") {
+
+                history.back();
+
+                return;
+            }
+
+            window.location.href =
+                '@Url.Action("Index", "Home")';
+        }
 
     </script>
 }
