@@ -4,11 +4,9 @@ WORKDIR /src
 
 COPY . .
 
-RUN dotnet restore \
-    src/PollBuilder.Web/PollBuilder.Web.csproj
+RUN dotnet restore src/PollBuilder.Web/PollBuilder.Web.csproj
 
-RUN dotnet publish \
-    src/PollBuilder.Web/PollBuilder.Web.csproj \
+RUN dotnet publish src/PollBuilder.Web/PollBuilder.Web.csproj \
     -c Release \
     -o /app/publish \
     --no-restore
@@ -26,7 +24,4 @@ ENV DOTNET_RUNNING_IN_CONTAINER=true
 
 EXPOSE 8080
 
-ENTRYPOINT [
-    "dotnet",
-    "PollBuilder.Web.dll"
-]
+ENTRYPOINT ["dotnet", "PollBuilder.Web.dll"]
