@@ -6,6 +6,7 @@ using PollBuilder.Application;
 using PollBuilder.Application.Interfaces.Notifications;
 using PollBuilder.Application.Interfaces.Services;
 using PollBuilder.Infrastructure;
+using PollBuilder.Infrastructure.Catching;
 using PollBuilder.Infrastructure.Identity;
 using PollBuilder.Infrastructure.Persistence;
 using PollBuilder.Infrastructure.Services;
