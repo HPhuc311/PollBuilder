@@ -1,0 +1,17 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".env" />
+    <File Path=".gitignore" />
+    <File Path="docker-compose.yml" />
+    <File Path="Dockerfile" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/PollBuilder.Application/PollBuilder.Application.csproj" />
+    <Project Path="src/PollBuilder.Domain/PollBuilder.Domain.csproj" />
+    <Project Path="src/PollBuilder.Infrastructure/PollBuilder.Infrastructure.csproj" />
+    <Project Path="src/PollBuilder.Web/PollBuilder.Web.csproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="test/PollBuilder.Tests/PollBuilder.Tests.csproj" />
+  </Folder>
+</Solution>

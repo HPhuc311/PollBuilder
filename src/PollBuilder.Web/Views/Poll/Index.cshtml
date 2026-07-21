@@ -1,0 +1,227 @@
+﻿@model IEnumerable<PollBuilder.Application.Features.Polls.Queries.GetAllPolls.PollDto>
+
+@{
+    ViewData["Title"] = "Polls";
+}
+
+<div class="container py-4">
+
+    <!-- Header -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h2 class="fw-bold mb-1">
+
+                Poll Management
+
+            </h2>
+
+            <p class="text-muted">
+
+                Create and manage online polls.
+
+            </p>
+
+        </div>
+
+        <a asp-action="Create"
+           class="btn btn-primary btn-lg">
+
+            <i class="bi bi-plus-circle"></i>
+
+            Create Poll
+
+        </a>
+
+    </div>
+
+    <!-- Search -->
+
+    <div class="card shadow-sm border-0 rounded-4 mb-4">
+
+        <div class="card-body">
+
+            <input id="searchPoll"
+                   class="form-control"
+                   placeholder="Search poll..." />
+
+        </div>
+
+    </div>
+
+    <!-- List -->
+
+    <div class="row g-4" id="pollContainer">
+
+        @foreach (var poll in Model)
+        {
+            bool isExpired = poll.ExpiredAt.HasValue &&
+                     poll.ExpiredAt.Value < DateTime.UtcNow;
+
+            bool isClosed = poll.IsClosed || isExpired;
+
+            <div class="col-lg-6 poll-item">
+
+                <div class="card border-0 shadow-lg h-100 @(isExpired ? "expired-card" : "")">
+
+                    <div class="card-body">
+
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+
+                            <h4 class="fw-bold">
+
+                                @poll.Title
+
+                            </h4>
+
+                            @if (isExpired)
+                            {
+                                <span class="badge bg-secondary p-3">
+                                    Expired
+                                </span>
+                            }
+                            else if (poll.IsClosed)
+                            {
+                                <span class="badge bg-danger p-3">
+                                    Closed
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success p-3">
+                                    Open
+                                </span>
+                            }
+
+                        </div>
+
+                        <p class="text-muted mt-2">
+
+                            @poll.Description
+
+                        </p>
+
+                        <hr />
+
+                        <div class="row text-center mt-3">
+
+                            <!-- Created -->
+                            <div class="col-6 border-end">
+
+                                <small class="text-muted d-block">
+                                    <i class="bi bi-calendar-plus"></i>
+                                    Created
+                                </small>
+
+                                <div class="fw-semibold">
+                                    @poll.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy")
+                                </div>
+
+                                <small class="text-secondary">
+                                    @poll.CreatedAt.ToLocalTime().ToString("HH:mm")
+                                </small>
+
+                            </div>
+
+                            <!-- Expired -->
+                            <div class="col-6">
+
+                                <small class="text-muted d-block">
+                                    <i class="bi bi-clock-history"></i>
+
+                                    @(isExpired ? "Expired" : "Expires")
+                                </small>
+
+                                @if (poll.ExpiredAt.HasValue)
+                                {
+                                    <div class="@(isExpired ? "text-muted fw-semibold" : "fw-semibold")">
+                                        @poll.ExpiredAt.Value.ToLocalTime().ToString("dd/MM/yyyy")
+                                    </div>
+
+                                    <small class="@(isExpired ? "text-muted" : "text-secondary")">
+                                        @poll.ExpiredAt.Value.ToLocalTime().ToString("HH:mm")
+                                    </small>
+                                }
+                                else
+                                {
+                                    <div>-</div>
+                                }
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="card-footer bg-white border-0">
+
+                        <div class="d-grid gap-2">
+                            @if (isClosed)
+                            {
+                                <button class="btn btn-secondary w-100 mb-2" disabled>
+                                    <i class="bi bi-lock-fill"></i>
+                                    Voting Closed
+                                </button>
+                            }
+                            else
+                            {
+                                <a asp-controller="Vote"
+                                   asp-action="Index"
+                                   asp-route-id="@poll.Id"
+                                   class="btn btn-success w-100 mb-2">
+                                    <i class="bi bi-check-circle-fill"></i>
+                                    Vote Now
+                                </a>
+                            }
+
+                            <a asp-controller="Result"
+                               asp-action="Index"
+                               asp-route-id="@poll.Id"
+                               class="btn btn-outline-primary w-100">
+                                <i class="bi bi-eye-fill"></i>
+                                View Details
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        }
+
+    </div>
+
+</div>
+
+@section Scripts {
+
+    <script>
+
+        const search = document.getElementById("searchPoll");
+
+        search.addEventListener("keyup", function(){
+
+            let keyword = this.value.toLowerCase();
+
+            document.querySelectorAll(".poll-item")
+                .forEach(function(item){
+
+                    let title =
+                        item.innerText.toLowerCase();
+
+                    item.style.display =
+                        title.includes(keyword)
+                            ? ""
+                            : "none";
+
+                });
+
+        });
+
+    </script>
+
+}

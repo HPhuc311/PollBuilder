@@ -1,0 +1,185 @@
+﻿@using System.Text.Json
+@model IEnumerable<PollBuilder.Web.ViewModels.Admin.VoteStatisticVM>
+
+@{
+    ViewData["Title"] = "Vote Statistics";
+
+    var labels = Model.Select(x => x.PollTitle).ToList();
+    var values = Model.Select(x => x.VoteCount).ToList();
+}
+<div class="container-fluid">
+
+    <div class="mb-4">
+
+        <h2 class="fw-bold">
+
+            Vote Statistics
+
+        </h2>
+
+        <p class="text-muted">
+
+            Poll voting overview
+
+        </p>
+
+    </div>
+
+    <div class="row mb-4">
+
+        <div class="col-lg-6">
+
+            <div class="card shadow-sm">
+
+                <div class="card-header">
+
+                    Vote Bar Chart
+
+                </div>
+
+                <div class="card-body">
+
+                    <canvas id="barChart"></canvas>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-6">
+
+            <div class="card shadow-sm">
+
+                <div class="card-header">
+
+                    Vote Distribution
+
+                </div>
+
+                <div class="card-body">
+
+                    <canvas id="pieChart"></canvas>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="card shadow-sm">
+
+        <div class="card-header">
+
+            Poll Statistics
+
+        </div>
+
+        <div class="card-body">
+
+            <table class="table table-hover">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Poll</th>
+
+                        <th>Votes</th>
+
+                        <th>Percentage</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+
+                            <td>
+
+                                @item.PollTitle
+
+                            </td>
+
+                            <td>
+
+                                <span class="badge bg-primary">
+
+                                    @item.VoteCount
+
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                @item.Percentage %
+
+                            </td>
+
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    @section Scripts{
+
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+        <script>
+
+            const labels =
+            @Html.Raw(JsonSerializer.Serialize(labels));
+
+            const data =
+            @Html.Raw(JsonSerializer.Serialize(values));
+
+            new Chart(document.getElementById('barChart'),{
+
+            type:'bar',
+
+            data:{
+
+            labels:labels,
+
+            datasets:[{
+
+            label:'Votes',
+
+            data:data
+
+            }]
+            }
+            });
+
+            new Chart(document.getElementById('pieChart'),{
+
+            type:'pie',
+
+            data:{
+
+            labels:labels,
+
+            datasets:[{
+
+            data:data
+
+            }]
+            }
+            });
+
+        </script>
+
+    }

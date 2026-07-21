@@ -1,0 +1,29 @@
+﻿@{
+    ViewData["Title"] = "Yêu cầu đăng nhập";
+}
+
+<div class="container mt-5">
+
+    <div class="alert alert-warning text-center">
+
+        <h3>
+            🔒 Bạn cần đăng nhập
+        </h3>
+
+        <p>
+            Chức năng này chỉ dành cho người dùng đã đăng nhập.
+        </p>
+
+        <a class="btn btn-primary"
+           href="/Identity/Account/Login?returnUrl=@ViewBag.ReturnUrl">
+            Đăng nhập
+        </a>
+
+        <a class="btn btn-secondary"
+           href="/">
+            Trang chủ
+        </a>
+
+    </div>
+
+</div>

@@ -1,0 +1,79 @@
+﻿@model PollBuilder.Web.ViewModels.Vote.VotePollVM
+
+@{
+    ViewData["Title"] = "Vote";
+}
+
+<div class="container mt-5">
+
+    <div class="card shadow">
+
+        <div class="card-header bg-primary text-white">
+
+            <h3>@Model.Title</h3>
+
+        </div>
+
+        <div class="card-body">
+
+            @if (!string.IsNullOrWhiteSpace(Model.Description))
+            {
+                <p class="text-muted">
+
+                    @Model.Description
+
+                </p>
+            }
+
+            <form asp-action="Index" method="post">
+
+                @Html.AntiForgeryToken()
+
+                <input asp-for="PollId" type="hidden" />
+
+                <div asp-validation-summary="ModelOnly"
+                     class="text-danger mb-3">
+                </div>
+
+                @foreach (var option in Model.Options)
+                {
+                    <div class="form-check mb-2">
+
+                        <input class="form-check-input"
+                               asp-for="SelectedOptionId"
+                               type="radio"
+                               value="@option.Id" />
+
+                        <label class="form-check-label">
+
+                            @option.Content
+
+                        </label>
+
+                    </div>
+                }
+
+                <span asp-validation-for="SelectedOptionId"
+                      class="text-danger"></span>
+
+                <hr />
+
+                <button class="btn btn-success">
+
+                    Vote
+
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+
+}

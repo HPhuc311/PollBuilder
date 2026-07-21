@@ -1,0 +1,188 @@
+﻿@model PollBuilder.Web.ViewModels.Vote.VotePollVM
+
+@{
+    ViewData["Title"] = "Vote";
+}
+
+<div class="container mt-5">
+
+    <div class="card shadow">
+
+        <div class="card-header bg-primary text-white">
+
+            <h3>@Model.Title</h3>
+
+        </div>
+
+        <div class="card-body">
+
+            @if (!string.IsNullOrWhiteSpace(Model.Description))
+            {
+                <p class="text-muted">
+                    @Model.Description
+                </p>
+            }
+
+            @if (Model.IsClosed)
+            {
+                <div class="alert alert-warning text-center">
+
+                    <i class="bi bi-lock-fill me-2"></i>
+
+                    <strong>This poll has been closed.</strong>
+                    <br />
+                    Voting is no longer available.
+
+                </div>
+
+                @if (ViewBag.QrCode != null)
+                {
+                    <div class="d-flex justify-content-center mt-3">
+                        <button type="button"
+                                class="btn btn-primary px-4"
+                                data-bs-toggle="modal"
+                                data-bs-target="#shareModal">
+
+                            <i class="bi bi-share-fill"></i>
+                            Share
+
+                        </button>
+                    </div>
+                }
+            }
+            else
+            {
+                <form asp-action="Index"
+                      method="post"
+                      id="voteForm">
+
+                    @Html.AntiForgeryToken()
+
+                    <input asp-for="PollId" type="hidden" />
+
+                    <div asp-validation-summary="ModelOnly"
+                         class="text-danger mb-3">
+                    </div>
+
+                    @foreach (var option in Model.Options)
+                    {
+                        <div class="form-check mb-2">
+
+                            <input class="form-check-input"
+                                   asp-for="SelectedOptionId"
+                                   type="radio"
+                                   value="@option.Id" />
+
+                            <label class="form-check-label">
+                                @option.Content
+                            </label>
+
+                        </div>
+                    }
+
+                    <span asp-validation-for="SelectedOptionId"
+                          class="text-danger">
+                    </span>
+
+                    <hr />
+
+                    <div class="d-flex justify-content-center gap-3 mt-3">
+
+                        <button type="submit"
+                                class="btn btn-success px-4">
+
+                            <i class="bi bi-check-circle-fill"></i>
+                            Vote
+
+                        </button>
+
+                        @if (ViewBag.QrCode != null)
+                        {
+                            <button type="button"
+                                    class="btn btn-primary px-4"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#shareModal">
+
+                                <i class="bi bi-share-fill"></i>
+                                Share
+
+                            </button>
+                        }
+
+                    </div>
+
+                </form>
+            }
+
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+
+        function copyVoteLink() {
+
+            const link = document.getElementById("voteLink");
+
+            navigator.clipboard.writeText(link.value);
+
+            const btn = event.target.closest("button");
+
+            const oldHtml = btn.innerHTML;
+
+            btn.innerHTML = '<i class="bi bi-check-lg"></i>';
+
+            setTimeout(() => {
+
+                btn.innerHTML = oldHtml;
+
+            }, 1500);
+
+        }
+
+        $("#voteForm").submit(function (e) {
+
+            e.preventDefault();
+
+            $.post(
+                $(this).attr("action"),
+                $(this).serialize(),
+                function (result) {
+
+                    Swal.fire({
+
+                        toast: true,
+
+                        position: "top-end",
+
+                        icon: result.success ? "success" : "error",
+
+                        title: result.message,
+
+                        showConfirmButton: false,
+
+                        timer: 1000
+
+                    }).then(() => {
+
+                        if (result.success) {
+
+                             window.location.href = result.redirectUrl;
+
+
+                        }
+
+                    });
+
+                });
+
+        });
+
+    </script>
+}

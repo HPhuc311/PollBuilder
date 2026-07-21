@@ -1,0 +1,83 @@
+version: "3.9"
+
+services:
+
+  pollbuilder:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: pollbuilder
+
+    ports:
+      - "8080:8080"
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+    environment:
+       ASPNETCORE_ENVIRONMENT: Docker
+       ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=PollBuilderDb;Username=postgres;Password=123456
+       Redis__ConnectionString: redis:6379
+       Redis__InstanceName: "PollBuilder:Docker:Local:"
+
+  postgres:
+    image: postgres:17
+
+    container_name: pollbuilder-postgres
+
+    restart: always
+
+    environment:
+      POSTGRES_DB: PollBuilderDb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+
+    container_name: pollbuilder-redis
+
+    ports:
+      - "6379:6379"
+
+  pgadmin:
+    image: dpage/pgadmin4
+
+    container_name: pollbuilder-pgadmin
+
+    restart: always
+
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+
+    ports:
+      - "5050:80"
+
+    depends_on:
+      - postgres
+
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+
+volumes:
+
+  postgres_data:
+
+  pgadmin_data:

@@ -1,0 +1,33 @@
+# Build
+**/bin/
+**/obj/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Rider
+.idea/
+
+# Logs
+*.log
+
+# ASP.NET
+appsettings.Development.json
+
+# Docker
+docker-data/
+
+# Node
+node_modules/
+
+# Publish
+publish/
+
+# Test Results
+TestResults/
+
+# OS
+.DS_Store
+Thumbs.db

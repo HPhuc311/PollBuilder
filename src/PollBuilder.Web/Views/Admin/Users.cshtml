@@ -1,0 +1,255 @@
+﻿@model IEnumerable<PollBuilder.Web.ViewModels.Admin.AdminUserVM>
+
+@{
+    ViewData["Title"] = "User Management";
+}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h2 class="fw-bold">
+
+                User Management
+
+            </h2>
+
+            <p class="text-muted">
+
+                Manage all registered users
+
+            </p>
+
+        </div>
+
+    </div>
+
+    <div class="card shadow-sm border-0">
+
+        <div class="card-body">
+
+            <form method="get">
+
+                <div class="row mb-4">
+
+                    <div class="col-md-5">
+
+                        <input name="search"
+                               class="form-control"
+                               placeholder="Search by name or email..." />
+
+                    </div>
+
+                    <div class="col-auto">
+
+                        <button class="btn btn-primary">
+
+                            Search
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+            <table class="table table-hover align-middle">
+
+                <thead class="table-light">
+
+                    <tr>
+
+                        <th>User</th>
+
+                        <th>Email</th>
+
+                        <th class="text-center">
+
+                            Polls
+
+                        </th>
+
+                        <th class="text-center">
+
+                            Votes
+
+                        </th>
+
+                        <th class="text-center">
+                            
+                            Action</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    @foreach (var user in Model)
+                    {
+                        <tr>
+
+                            <td>
+
+                                <div class="d-flex align-items-center">
+
+                                    <div class="rounded-circle bg-primary text-white
+                                        d-flex justify-content-center align-items-center"
+                                         style="width:40px;height:40px;">
+
+                                        @user.UserName.Substring(0, 1).ToUpper()
+
+                                    </div>
+
+                                    <div class="ms-3">
+
+                                        <strong>
+
+                                            @user.UserName
+
+                                        </strong>
+
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+                            <td>
+
+                                @user.Email
+
+                            </td>
+
+                            <td class="text-center">
+
+                                <span class="badge bg-success">
+
+                                    @user.PollCount
+
+                                </span>
+
+                            </td>
+
+                            <td class="text-center">
+
+                                <span class="badge bg-primary">
+
+                                    @user.VoteCount
+
+                                </span>
+
+                            </td>
+                            <td class="text-center">
+                                    @if (user.Email != "admin@pollbuilder.com")
+                                    {
+                                        <button class="btn btn-warning lockBtn" data-id="@user.Id">
+                                            Lock
+                                        </button>
+
+                                        <button class="btn btn-success unlockBtn" data-id="@user.Id">
+                                            Unlock
+                                        </button>
+
+                                        <button class="btn btn-danger deleteBtn" data-id="@user.Id">
+                                            Delete
+                                        </button>
+                                    }
+                            </td>
+
+                        </tr>
+                       
+
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts{
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+
+function showResult(result){
+    Swal.fire({
+        toast:true,
+        position:'top-end',
+        icon: result.success ? 'success' : 'error',
+        title: result.message,
+        showConfirmButton:false,
+        timer:1800
+    }).then(()=>{
+        if(result.success){
+            location.reload();
+        }
+    });
+}
+
+// Delete
+$(".deleteBtn").click(function () {
+
+    let id = $(this).data("id");
+
+    Swal.fire({
+        title: "Delete user?",
+        text: "This action cannot be undone.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#dc3545"
+    }).then((confirm) => {
+
+        if (!confirm.isConfirmed)
+            return;
+
+        $.post("/Admin/DeleteUser", { id: id }, function (result) {
+
+            showResult(result);
+
+        });
+
+    });
+
+});
+
+
+// Lock
+$(".lockBtn").click(function () {
+
+    let id = $(this).data("id");
+
+    $.post("/Admin/LockUser", { id: id }, function (result) {
+
+        showResult(result);
+
+    });
+
+});
+
+
+// Unlock
+$(".unlockBtn").click(function () {
+
+    let id = $(this).data("id");
+
+    $.post("/Admin/UnlockUser", { id: id }, function (result) {
+
+        showResult(result);
+
+    });
+
+});
+
+</script>
+
+}

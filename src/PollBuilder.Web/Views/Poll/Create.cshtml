@@ -1,0 +1,473 @@
+﻿@model PollBuilder.Web.ViewModels.Poll.CreatePollVM
+
+@{
+    ViewData["Title"] = "Create Poll";
+}
+
+<div class="container py-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-9">
+
+            <!-- Header -->
+
+            <div class="text-center mb-5">
+
+                <span class="badge bg-primary px-3 py-2 mb-3">
+                    Poll Builder
+                </span>
+
+                <h1 class="fw-bold display-5">
+
+                    Create a New Poll
+
+                </h1>
+
+                <p class="text-muted">
+
+                    Create an online poll and share it with everyone instantly.
+
+                </p>
+
+            </div>
+
+            <!-- Form -->
+
+            <div class="card shadow-lg border-0 rounded-4">
+
+                <div class="card-body p-5">
+
+                    <form id="createPollForm" asp-action="Create" method="post">
+
+                        @Html.AntiForgeryToken()
+
+                        <div asp-validation-summary="ModelOnly"
+                             class="text-danger mb-4">
+                        </div>
+
+                        <!-- Question -->
+
+                        <div class="mb-4">
+
+                            <label asp-for="Title"
+                                   class="form-label fw-semibold">
+                            </label>
+
+                            <input asp-for="Title"
+                                   class="form-control form-control-lg"
+                                   placeholder="Enter your question..." />
+
+                            <span asp-validation-for="Title"
+                                  class="text-danger">
+                            </span>
+
+                        </div>
+
+                        <!-- Description -->
+
+                        <div class="mb-4">
+
+                            <label asp-for="Description"
+                                   class="form-label fw-semibold">
+                            </label>
+
+                            <textarea asp-for="Description"
+                                      rows="4"
+                                      class="form-control"
+                                      placeholder="Short description (optional)">
+                            </textarea>
+
+                            <span asp-validation-for="Description"
+                                  class="text-danger">
+                            </span>
+
+                        </div>
+
+                        <!-- Expired -->
+
+                        <div class="mb-4">
+
+                            <label asp-for="ExpiredAt"
+                                   class="form-label fw-semibold">
+                            </label>
+
+                            <input id="expiredAt"
+                                asp-for="ExpiredAt"
+                                   type="datetime-local"
+                                   class="form-control" />
+
+                            <span asp-validation-for="ExpiredAt"
+                                  class="text-danger">
+                            </span>
+
+                        </div>
+
+                        <hr class="my-4" />
+
+                        <div class="mb-3">
+
+                            <label class="form-label fw-bold">Options</label>
+
+                            <div id="optionsContainer">
+
+                                <!-- Option 1 -->
+                                <div class="option-item card mb-3 p-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="option-title">Option 1</span>
+                                    </div>
+
+                                    <input asp-for="Option1"
+                                           class="form-control"
+                                           placeholder="Enter option..." />
+                                    <span asp-validation-for="Option1" class="text-danger small"></span>
+                                </div>
+
+                                <!-- Option 2 -->
+                                <div class="option-item card mb-3 p-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="option-title">Option 2</span>
+                                    </div>
+
+                                    <input asp-for="Option2"
+                                           class="form-control"
+                                           placeholder="Enter option..." />
+                                    <span asp-validation-for="Option2" class="text-danger small"></span>
+                                </div>
+
+                                <!-- Option 3 -->
+                                <div id="option3"
+                                     class="option-item card mb-3 p-3 d-none">
+
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+
+                                        <span class="option-title">Option 3</span>
+
+                                        <button type="button"
+                                                class="btn btn-outline-danger btn-sm remove-option"
+                                                data-target="Option3">
+
+                                            <i class="bi bi-x-lg"></i>
+
+                                        </button>
+
+                                    </div>
+
+                                    <input asp-for="Option3"
+                                           class="form-control option-input"
+                                           placeholder="Enter option..." />
+
+                                    <span asp-validation-for="Option3"
+                                          class="text-danger small"></span>
+
+                                </div>
+
+                                <!-- Option 4 -->
+                                <div id="option4"
+                                     class="option-item card mb-3 p-3 d-none">
+
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+
+                                        <span class="option-title">Option 4</span>
+
+                                        <button type="button"
+                                                class="btn btn-outline-danger btn-sm remove-option "
+                                                data-target="Option4">
+
+                                            <i class="bi bi-x-lg"></i>
+
+                                        </button>
+
+                                    </div>
+
+                                    <input asp-for="Option4"
+                                           class="form-control option-input"
+                                           placeholder="Enter option..." />
+
+                                    <span asp-validation-for="Option4"
+                                          class="text-danger small"></span>
+
+                                </div>
+
+                                <!-- Option 5 -->
+                                <div id="option5"
+                                     class="option-item card mb-3 p-3 d-none">
+
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+
+                                        <span class="option-title">Option 5</span>
+
+                                        <button type="button"
+                                                class="btn btn-outline-danger btn-sm remove-option"
+                                                data-target="Option5">
+
+                                            <i class="bi bi-x-lg"></i>
+
+                                        </button>
+
+                                    </div>
+
+                                    <input asp-for="Option5"
+                                           class="form-control option-input"
+                                           placeholder="Enter option..." />
+
+                                    <span asp-validation-for="Option5"
+                                          class="text-danger small"></span>
+                                </div>
+
+                                <!-- Option 6 -->
+                                <div id="option6"
+                                     class="option-item card mb-3 p-3 d-none">
+
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+
+                                        <span class="option-title">Option 6</span>
+
+                                        <button type="button"
+                                                class="btn btn-outline-danger btn-sm remove-option"
+                                                data-target="Option6">
+
+                                            <i class="bi bi-x-lg"></i>
+
+                                        </button>
+
+                                    </div>
+
+                                    <input asp-for="Option6"
+                                           class="form-control option-input"
+                                           placeholder="Enter option..." />
+
+                                    <span asp-validation-for="Option6"
+                                          class="text-danger small"></span>
+
+                                </div>
+
+                            </div>
+
+                            <button id="btnAddOption"
+                                    type="button"
+                                    class="btn btn-outline-primary rounded-pill">
+
+                                <i class="bi bi-plus-circle"></i>
+
+                                Add Option
+
+                            </button>
+
+                        </div>
+
+                        <hr />
+
+                        <div class="d-flex justify-content-between">
+
+                            <button type="button"
+                                    class="btn btn-secondary"
+                                    onclick="goBack()">
+
+                                <i class="bi bi-arrow-left"></i>
+
+                                Back
+
+                            </button>
+
+                            <button type="submit"
+                                    class="btn btn-primary px-5">
+
+                                <i class="bi bi-check-circle"></i>
+
+                                Create Poll
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+
+        const addButton = document.getElementById("btnAddOption");
+
+        const hiddenOptions = [
+            document.getElementById("option3"),
+            document.getElementById("option4"),
+            document.getElementById("option5"),
+            document.getElementById("option6")
+        ];
+
+        let currentVisible = 2;
+
+        // =========================
+        // Add Option
+        // =========================
+        addButton.addEventListener("click", function () {
+
+            if (currentVisible >= 6) {
+
+                toastr.warning("Maximum 6 options.");
+
+                return;
+            }
+
+            hiddenOptions[currentVisible - 2].classList.remove("d-none");
+
+          const input = hiddenOptions[currentVisible - 2].querySelector("input");
+
+            input.setAttribute("required", "required");
+
+                   $(input).rules("add", {
+            required: true,
+            messages: {
+                required: "Option is required."
+            }
+        });
+
+        input.focus();
+
+          // Reset lại validator
+        $("form").validate().resetForm();
+
+            currentVisible++;
+
+            if (currentVisible >= 6) {
+
+                addButton.disabled = true;
+
+            }
+
+        });
+
+        // =========================
+        // Remove Option
+        // =========================
+        document.querySelectorAll(".remove-option").forEach(button => {
+            button.addEventListener("click", function () {
+
+                const property = this.dataset.target;
+
+                const optionDiv = document.getElementById(property.toLowerCase());
+
+                const input = optionDiv.querySelector("input");
+
+                input.value = "";
+
+                $(input).rules("remove");
+
+                $(input).removeClass("input-validation-error");
+
+                optionDiv.querySelector("span[data-valmsg-for]").innerHTML = "";
+
+                // Xóa rule Required
+                $(input).rules("remove", "required");
+
+                optionDiv.classList.add("d-none");
+
+                // Reset validator
+                $("form").validate().resetForm();
+
+                currentVisible--;
+
+                addButton.disabled = false;
+
+            });
+
+        });
+
+
+        // =========================
+        // Server Validation
+        // =========================
+        @if (!ViewData.ModelState.IsValid)
+            {
+              foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                 {
+                   <text>
+                       toastr.error("@Html.Raw(error.ErrorMessage)");
+                   </text>
+                 }
+            }
+
+        // =========================
+        // Go Back
+        // =========================
+        function goBack() {
+
+            if (document.referrer !== "") {
+
+                history.back();
+
+            }
+            else {
+
+                window.location.href = '@Url.Action("Index", "Home")';
+
+            }
+
+        }
+        document.addEventListener("DOMContentLoaded", () => {
+
+            const input = document.getElementById("expiredAt");
+
+            function updateMinDateTime() {
+
+                const now = new Date();
+
+                now.setSeconds(0);
+                now.setMilliseconds(0);
+
+                const year = now.getFullYear();
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const day = String(now.getDate()).padStart(2, '0');
+                const hour = String(now.getHours()).padStart(2, '0');
+                const minute = String(now.getMinutes()).padStart(2, '0');
+
+                input.min = `${year}-${month}-${day}T${hour}:${minute}`;
+            }
+
+            updateMinDateTime();
+
+        });
+
+        $("#createPollForm").submit(function (e) {
+
+            e.preventDefault();
+
+            $.post(
+                $(this).attr("action"),
+                $(this).serialize(),
+                function (result) {
+
+                    Swal.fire({
+                        toast: true,
+                        position: "top-end",
+                        icon: result.success ? "success" : "error",
+                        title: result.message,
+                        showConfirmButton: false,
+                        timer: 1000
+                    }).then(() => {
+
+                        if (result.success) {
+                            window.location.href = result.redirectUrl;
+                        }
+
+                    });
+
+                }
+            );
+
+        });
+
+    </script>
+}

@@ -1,0 +1,336 @@
+﻿@model PollBuilder.Web.ViewModels.Result.PollResultVM
+
+@{
+    ViewData["Title"] = "Poll Result";
+}
+
+<div class="container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">@Model.Title</h2>
+
+        <div>
+            @if (Model.IsClosed)
+            {
+                <span class="badge bg-danger fs-6">Closed</span>
+            }
+            else
+            {
+                <span class="badge bg-success fs-6">Open</span>
+            }
+        </div>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(Model.Description))
+    {
+        <div class="alert alert-light border">
+            @Model.Description
+        </div>
+    }
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="info-card">
+                <div class="info-title">Created</div>
+                <div class="info-value">@Model.CreatedAt.ToString("dd/MM/yyyy")</div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="info-card">
+                <div class="info-title">Expired</div>
+                <div class="info-value">@(Model.ExpiredAt?.ToString("dd/MM/yyyy") ?? "-")</div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="info-card">
+                <div class="info-title">Total Votes</div>
+                <div class="info-value">@Model.TotalVotes</div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="info-card">
+                <div class="info-title">Status</div>
+                <div class="info-value">@(Model.IsClosed ? "Closed" : "Open")</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-4 d-flex gap-2 flex-wrap">
+        <a asp-controller="Poll"
+           asp-action="Index"
+           class="btn btn-outline-secondary">
+            Back to Polls
+        </a>
+
+        @if (Model.CanManage)
+        {
+            if (!Model.IsClosed)
+            {
+                <form asp-controller="Poll"
+                      asp-action="Close"
+                      method="post"
+                      class="d-inline"
+                      id="closeForm">
+
+                    @Html.AntiForgeryToken()
+
+                    <input type="hidden"
+                           name="id"
+                           value="@Model.PollId" />
+
+                    <button type="button"
+                            data-id="@Model.PollId"
+                            class="btn btn-warning"
+                            id="btnClose">
+
+                        Close Poll
+
+                    </button>
+
+                </form>
+            }
+
+            <form asp-controller="Poll"
+                  asp-action="Delete"
+                  method="post"
+                  id="deleteForm-@Model.PollId">
+
+                @Html.AntiForgeryToken()
+
+                <input type="hidden"
+                       name="id"
+                       value="@Model.PollId" />
+
+                <button type="button"
+                        class="btn btn-danger btnDelete"
+                        data-id="@Model.PollId">
+                    Delete
+                </button>
+
+            </form>
+        }
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <canvas id="voteChart"></canvas>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            Result Details
+        </div>
+        <div class="card-body">
+
+            @foreach (var item in Model.Options)
+            {
+                <div class="mb-3">
+
+                    <div class="d-flex justify-content-between">
+                        <strong>@item.Content</strong>
+                        <span>@item.VoteCount vote(s) - @item.Percentage.ToString("0.##")%</span>
+                    </div>
+
+                    <div class="progress">
+                        <div class="progress-bar"
+                             role="progressbar"
+                             style="width:@item.Percentage%">
+                        </div>
+                    </div>
+
+                </div>
+            }
+
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js"></script>
+
+    <script>
+
+    // ==========================
+    // Toast
+    // ==========================
+    function showResult(result) {
+
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: result.success ? 'success' : 'error',
+            title: result.message,
+            showConfirmButton: false,
+            timer: 1000
+        }).then(() => {
+
+            if (result.success) {
+                location.reload();
+            }
+
+        });
+
+    }
+
+    // ==========================
+    // Chart
+    // ==========================
+
+    const labels = [
+        @foreach (var i in Model.Options)
+        {
+            <text>'@i.Content',</text>
+        }
+    ];
+
+    const votes = [
+        @foreach (var i in Model.Options)
+        {
+            <text>@i.VoteCount,</text>
+        }
+    ];
+
+    new Chart(document.getElementById("voteChart"), {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Votes',
+                data: votes,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                }
+            }
+        }
+    });
+
+    // ==========================
+    // SignalR
+    // ==========================
+
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/pollHub")
+        .withAutomaticReconnect()
+        .build();
+
+    connection.start().then(() => {
+        connection.invoke("JoinPoll", "@Model.PollId");
+    });
+
+    connection.on("VoteUpdated", function (id) {
+
+        if (id === "@Model.PollId") {
+            location.reload();
+        }
+
+    });
+
+    // ==========================
+    // Delete Poll
+    // ==========================
+
+    $(".btnDelete").click(function () {
+
+        let id = $(this).data("id");
+
+        Swal.fire({
+            title: "Delete Poll?",
+            text: "This action cannot be undone.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#dc3545",
+            cancelButtonColor: "#6c757d",
+            confirmButtonText: "Delete",
+            cancelButtonText: "Cancel"
+        }).then((r) => {
+
+            if (!r.isConfirmed)
+                return;
+
+            $.post("/Result/Delete",
+                {
+                    id: id,
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                },
+                function (result) {
+
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: result.success ? 'success' : 'error',
+                        title: result.message,
+                        showConfirmButton: false,
+                        timer: 1000
+                    }).then(() => {
+
+                        if (result.success) {
+                            window.location.href = "/Poll";
+                        }
+
+                    });
+
+                });
+
+        });
+
+    });
+
+    // ==========================
+    // Close Poll
+    // ==========================
+
+    $("#btnClose").click(function () {
+
+        let id = $(this).data("id");
+
+        Swal.fire({
+            title: "Close Poll?",
+            text: "Users will no longer be able to vote.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#f0ad4e",
+            cancelButtonColor: "#6c757d",
+            confirmButtonText: "Close Poll",
+            cancelButtonText: "Cancel"
+        }).then((r) => {
+
+            if (!r.isConfirmed)
+                return;
+
+            $.post("/Result/Close",
+                {
+                    id: id,
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                },
+                function (result) {
+
+                    showResult(result);
+
+                });
+
+        });
+
+    });
+
+</script>
+
+
+}
+
+
