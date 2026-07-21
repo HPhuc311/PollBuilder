@@ -24,10 +24,14 @@ public class VoteController : Controller
     [HttpGet]
     public async Task<IActionResult> Index(Guid id)
     {
-        var poll = await _mediator.Send(new GetPollByIdQuery(id));
+        var poll = await _mediator.Send(
+            new GetPollByIdQuery(id)
+        );
 
         if (poll == null)
+        {
             return NotFound();
+        }
 
         var vm = new VotePollVM
         {
@@ -35,6 +39,7 @@ public class VoteController : Controller
             Title = poll.Title,
             Description = poll.Description,
             IsClosed = poll.IsClosed,
+
             Options = poll.Options.Select(x => new VoteOptionVM
             {
                 Id = x.Id,
@@ -42,11 +47,25 @@ public class VoteController : Controller
             }).ToList()
         };
 
-        string voteUrl =
-            $"{Request.Scheme}://{Request.Host}/Vote/Index?id={poll.Id}";
+        var voteUrl = Url.Action(
+            action: nameof(Index),
+            controller: "Vote",
+            values: new { id = poll.Id },
+            protocol: Request.Scheme,
+            host: Request.Host.Value
+        );
+
+        if (string.IsNullOrWhiteSpace(voteUrl))
+        {
+            return StatusCode(
+                StatusCodes.Status500InternalServerError,
+                "Unable to generate poll sharing URL."
+            );
+        }
 
         ViewBag.VoteUrl = voteUrl;
-        ViewBag.QrCode = _qrCodeService.GenerateQrCode(voteUrl);
+        ViewBag.QrCode =
+            _qrCodeService.GenerateQrCode(voteUrl);
 
         return View(vm);
     }

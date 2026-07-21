@@ -1,4 +1,5 @@
-﻿@model PollBuilder.Web.ViewModels.Vote.VotePollVM
+﻿@using System.Text.Encodings.Web
+@model PollBuilder.Web.ViewModels.Vote.VotePollVM
 
 @{
     ViewData["Title"] = "Vote";
@@ -30,23 +31,27 @@
                     <i class="bi bi-lock-fill me-2"></i>
 
                     <strong>This poll has been closed.</strong>
+
                     <br />
+
                     Voting is no longer available.
 
                 </div>
 
-                @if (ViewBag.QrCode != null)
+                @if (ViewBag.QrCode != null && ViewBag.VoteUrl != null)
                 {
                     <div class="d-flex justify-content-center mt-3">
+
                         <button type="button"
                                 class="btn btn-primary px-4"
                                 data-bs-toggle="modal"
                                 data-bs-target="#shareModal">
 
-                            <i class="bi bi-share-fill"></i>
+                            <i class="bi bi-share-fill me-1"></i>
                             Share
 
                         </button>
+
                     </div>
                 }
             }
@@ -71,10 +76,14 @@
                             <input class="form-check-input"
                                    asp-for="SelectedOptionId"
                                    type="radio"
-                                   value="@option.Id" />
+                                   value="@option.Id"
+                                   id="option-@option.Id" />
 
-                            <label class="form-check-label">
+                            <label class="form-check-label"
+                                   for="option-@option.Id">
+
                                 @option.Content
+
                             </label>
 
                         </div>
@@ -91,19 +100,19 @@
                         <button type="submit"
                                 class="btn btn-success px-4">
 
-                            <i class="bi bi-check-circle-fill"></i>
+                            <i class="bi bi-check-circle-fill me-1"></i>
                             Vote
 
                         </button>
 
-                        @if (ViewBag.QrCode != null)
+                        @if (ViewBag.QrCode != null && ViewBag.VoteUrl != null)
                         {
                             <button type="button"
                                     class="btn btn-primary px-4"
                                     data-bs-toggle="modal"
                                     data-bs-target="#shareModal">
 
-                                <i class="bi bi-share-fill"></i>
+                                <i class="bi bi-share-fill me-1"></i>
                                 Share
 
                             </button>
@@ -120,68 +129,393 @@
 
 </div>
 
+@if (ViewBag.QrCode != null && ViewBag.VoteUrl != null)
+{
+    <div class="modal fade"
+         id="shareModal"
+         tabindex="-1"
+         aria-labelledby="shareModalLabel"
+         aria-hidden="true">
+
+        <div class="modal-dialog modal-dialog-centered">
+
+            <div class="modal-content">
+
+                <div class="modal-header">
+
+                    <h5 class="modal-title"
+                        id="shareModalLabel">
+
+                        <i class="bi bi-share-fill me-2"></i>
+                        Share poll
+
+                    </h5>
+
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close">
+                    </button>
+
+                </div>
+
+                <div class="modal-body text-center">
+
+                    <p class="text-muted">
+                        Scan the QR code or copy the link below.
+                    </p>
+
+                    <img src="data:image/png;base64,@ViewBag.QrCode"
+                         alt="Poll QR Code"
+                         class="img-fluid mb-3"
+                         style="max-width: 220px;" />
+
+                    <div class="input-group">
+
+                        <input id="voteLink"
+                               type="text"
+                               class="form-control"
+                               value="@ViewBag.VoteUrl"
+                               readonly />
+
+                        <button type="button"
+                                id="copyVoteLinkButton"
+                                class="btn btn-outline-primary"
+                                onclick="copyVoteLink(this)">
+
+                            <i class="bi bi-clipboard"></i>
+                            Copy
+
+                        </button>
+
+                    </div>
+
+                    <div id="copyMessage"
+                         class="small text-success mt-2 d-none">
+
+                        Link copied successfully.
+
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal">
+
+                        Close
+
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-primary"
+                            onclick="shareVoteLink()">
+
+                        <i class="bi bi-share-fill me-1"></i>
+                        Share
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+}
+
 @section Scripts
 {
     <partial name="_ValidationScriptsPartial" />
 
     <script>
 
-        function copyVoteLink() {
+        async function copyVoteLink(button) {
 
-            const link = document.getElementById("voteLink");
+            const linkInput =
+                document.getElementById("voteLink");
 
-            navigator.clipboard.writeText(link.value);
+            const copyMessage =
+                document.getElementById("copyMessage");
 
-            const btn = event.target.closest("button");
+            if (!linkInput) {
 
-            const oldHtml = btn.innerHTML;
+                console.error(
+                    "voteLink input was not found."
+                );
 
-            btn.innerHTML = '<i class="bi bi-check-lg"></i>';
+                return;
+            }
 
-            setTimeout(() => {
+            const link = linkInput.value;
 
-                btn.innerHTML = oldHtml;
+            try {
 
-            }, 1500);
+                if (
+                    navigator.clipboard &&
+                    window.isSecureContext
+                ) {
 
-        }
+                    await navigator.clipboard.writeText(link);
 
-        $("#voteForm").submit(function (e) {
+                } else {
 
-            e.preventDefault();
+                    linkInput.focus();
+                    linkInput.select();
 
-            $.post(
-                $(this).attr("action"),
-                $(this).serialize(),
-                function (result) {
+                    linkInput.setSelectionRange(
+                        0,
+                        linkInput.value.length
+                    );
+
+                    const copied =
+                        document.execCommand("copy");
+
+                    if (!copied) {
+
+                        throw new Error(
+                            "Browser rejected copy command."
+                        );
+                    }
+                }
+
+                if (button) {
+
+                    const oldHtml = button.innerHTML;
+
+                    button.innerHTML =
+                        '<i class="bi bi-check-lg"></i> Copied';
+
+                    button.classList.remove(
+                        "btn-outline-primary"
+                    );
+
+                    button.classList.add(
+                        "btn-success"
+                    );
+
+                    copyMessage?.classList.remove(
+                        "d-none"
+                    );
+
+                    setTimeout(function () {
+
+                        button.innerHTML = oldHtml;
+
+                        button.classList.remove(
+                            "btn-success"
+                        );
+
+                        button.classList.add(
+                            "btn-outline-primary"
+                        );
+
+                        copyMessage?.classList.add(
+                            "d-none"
+                        );
+
+                    }, 1500);
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "Unable to copy poll link:",
+                    error
+                );
+
+                if (typeof Swal !== "undefined") {
 
                     Swal.fire({
-
-                        toast: true,
-
-                        position: "top-end",
-
-                        icon: result.success ? "success" : "error",
-
-                        title: result.message,
-
-                        showConfirmButton: false,
-
-                        timer: 1000
-
-                    }).then(() => {
-
-                        if (result.success) {
-
-                             window.location.href = result.redirectUrl;
-
-
-                        }
-
+                        icon: "error",
+                        title: "Copy failed",
+                        text: "Please select and copy the link manually."
                     });
 
-                });
+                } else {
 
+                    alert(
+                        "Unable to copy the link. Please copy it manually."
+                    );
+                }
+            }
+        }
+
+        async function shareVoteLink() {
+
+            const linkInput =
+                document.getElementById("voteLink");
+
+            if (!linkInput) {
+
+                console.error(
+                    "voteLink input was not found."
+                );
+
+                return;
+            }
+
+            const shareData = {
+                title: "@Html.Raw(JavaScriptEncoder.Default.Encode(Model.Title))",
+                text: "Please vote in this poll:",
+                url: linkInput.value
+            };
+
+            try {
+
+                if (navigator.share) {
+
+                    await navigator.share(shareData);
+
+                } else {
+
+                    const copyButton =
+                        document.getElementById(
+                            "copyVoteLinkButton"
+                        );
+
+                    if (copyButton) {
+
+                        await copyVoteLink(copyButton);
+                    }
+
+                    if (typeof Swal !== "undefined") {
+
+                        Swal.fire({
+                            icon: "info",
+                            title: "Link copied",
+                            text: "Your browser does not support the share menu, so the poll link was copied instead.",
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+
+                    } else {
+
+                        alert(
+                            "The link has been copied."
+                        );
+                    }
+                }
+
+            } catch (error) {
+
+                if (error.name !== "AbortError") {
+
+                    console.error(
+                        "Unable to share poll:",
+                        error
+                    );
+
+                    if (typeof Swal !== "undefined") {
+
+                        Swal.fire({
+                            icon: "error",
+                            title: "Share failed",
+                            text: "The poll could not be shared."
+                        });
+
+                    } else {
+
+                        alert(
+                            "The poll could not be shared."
+                        );
+                    }
+                }
+            }
+        }
+
+        $(function () {
+
+            $("#voteForm").on("submit", function (e) {
+
+                e.preventDefault();
+
+                const form = $(this);
+                const submitButton =
+                    form.find('button[type="submit"]');
+
+                submitButton.prop("disabled", true);
+
+                $.ajax({
+                    url: form.attr("action"),
+                    type: "POST",
+                    data: form.serialize(),
+
+                    success: function (result) {
+
+                        if (typeof Swal !== "undefined") {
+
+                            Swal.fire({
+                                toast: true,
+                                position: "top-end",
+                                icon: result.success
+                                    ? "success"
+                                    : "error",
+                                title: result.message,
+                                showConfirmButton: false,
+                                timer: 1200
+                            }).then(function () {
+
+                                if (
+                                    result.success &&
+                                    result.redirectUrl
+                                ) {
+
+                                    window.location.href =
+                                        result.redirectUrl;
+                                }
+                            });
+
+                        } else {
+
+                            alert(result.message);
+
+                            if (
+                                result.success &&
+                                result.redirectUrl
+                            ) {
+
+                                window.location.href =
+                                    result.redirectUrl;
+                            }
+                        }
+                    },
+
+                    error: function (xhr) {
+
+                        console.error(
+                            "Vote request failed:",
+                            xhr
+                        );
+
+                        if (typeof Swal !== "undefined") {
+
+                            Swal.fire({
+                                icon: "error",
+                                title: "Vote failed",
+                                text: "An unexpected error occurred."
+                            });
+
+                        } else {
+
+                            alert(
+                                "An unexpected error occurred."
+                            );
+                        }
+                    },
+
+                    complete: function () {
+
+                        submitButton.prop(
+                            "disabled",
+                            false
+                        );
+                    }
+                });
+            });
         });
 
     </script>
