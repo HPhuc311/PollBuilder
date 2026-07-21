@@ -10,6 +10,7 @@ using PollBuilder.Infrastructure.Identity;
 using PollBuilder.Infrastructure.Persistence;
 using PollBuilder.Infrastructure.Services;
 using PollBuilder.Web.Hubs;
+using StackExchange.Redis;
 using System.Threading.RateLimiting;
 
 
@@ -81,30 +82,183 @@ builder.Services.AddRateLimiter(options =>
 
 builder.Services.AddHttpContextAccessor();
 
-var redisConnection = builder.Configuration["Redis:ConnectionString"]
-    ?? Environment.GetEnvironmentVariable("REDIS_CONNECTION_RENDER")
-    ?? Environment.GetEnvironmentVariable("REDIS_CONNECTION");
+// ==============================
+// Redis
+// ==============================
 
-if (!string.IsNullOrWhiteSpace(redisConnection) &&
-    redisConnection.StartsWith("redis://", StringComparison.OrdinalIgnoreCase))
-{
-    redisConnection = new Uri(redisConnection).Authority;
-}
+var redisConnection =
+    Environment.GetEnvironmentVariable(
+        "REDIS_CONNECTION_RENDER"
+    )
+    ?? Environment.GetEnvironmentVariable(
+        "REDIS_CONNECTION"
+    )
+    ?? builder.Configuration[
+        "Redis:ConnectionString"
+    ];
 
-Console.WriteLine($"Redis = {redisConnection}");
-
-var redisInstanceName = builder.Configuration["Redis:InstanceName"]
+var redisInstanceName =
+    builder.Configuration["Redis:InstanceName"]
     ?? $"PollBuilder:{builder.Environment.EnvironmentName}:";
 
-builder.Services.AddStackExchangeRedisCache(options =>
+if (string.IsNullOrWhiteSpace(redisConnection))
 {
-    options.Configuration = redisConnection;
-    options.InstanceName = redisInstanceName;
-});
+    Console.WriteLine(
+        "Redis connection was not configured. " +
+        "Using in-memory distributed cache."
+    );
 
-Console.WriteLine($"Redis namespace = {redisInstanceName}");
+    builder.Services.AddDistributedMemoryCache();
+}
+else
+{
+    try
+    {
+        ConfigurationOptions redisOptions;
 
-builder.Services.AddScoped<ICacheService, RedisCacheService>();
+        if (
+            redisConnection.StartsWith(
+                "redis://",
+                StringComparison.OrdinalIgnoreCase
+            )
+            ||
+            redisConnection.StartsWith(
+                "rediss://",
+                StringComparison.OrdinalIgnoreCase
+            )
+        )
+        {
+            var redisUri =
+                new Uri(redisConnection);
+
+            var redisPort =
+                redisUri.IsDefaultPort
+                    ? 6379
+                    : redisUri.Port;
+
+            redisOptions =
+                new ConfigurationOptions
+                {
+                    AbortOnConnectFail = false,
+                    ConnectRetry = 3,
+                    ConnectTimeout = 10000,
+                    SyncTimeout = 10000,
+
+                    Ssl = redisUri.Scheme.Equals(
+                        "rediss",
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                };
+
+            redisOptions.EndPoints.Add(
+                redisUri.Host,
+                redisPort
+            );
+
+            if (
+                !string.IsNullOrWhiteSpace(
+                    redisUri.UserInfo
+                )
+            )
+            {
+                var userInfo =
+                    redisUri.UserInfo.Split(
+                        ':',
+                        2
+                    );
+
+                if (userInfo.Length == 2)
+                {
+                    var user =
+                        Uri.UnescapeDataString(
+                            userInfo[0]
+                        );
+
+                    var password =
+                        Uri.UnescapeDataString(
+                            userInfo[1]
+                        );
+
+                    if (
+                        !string.IsNullOrWhiteSpace(user)
+                        &&
+                        !user.Equals(
+                            "default",
+                            StringComparison.OrdinalIgnoreCase
+                        )
+                    )
+                    {
+                        redisOptions.User = user;
+                    }
+
+                    redisOptions.Password =
+                        password;
+                }
+                else
+                {
+                    redisOptions.Password =
+                        Uri.UnescapeDataString(
+                            userInfo[0]
+                        );
+                }
+            }
+        }
+        else
+        {
+            redisOptions =
+                ConfigurationOptions.Parse(
+                    redisConnection
+                );
+
+            redisOptions.AbortOnConnectFail =
+                false;
+
+            redisOptions.ConnectRetry = 3;
+            redisOptions.ConnectTimeout = 10000;
+            redisOptions.SyncTimeout = 10000;
+        }
+
+        builder.Services.AddStackExchangeRedisCache(
+            options =>
+            {
+                options.ConfigurationOptions =
+                    redisOptions;
+
+                options.InstanceName =
+                    redisInstanceName;
+            }
+        );
+
+        Console.WriteLine(
+            $"Redis host = {redisOptions.EndPoints.FirstOrDefault()}"
+        );
+
+        Console.WriteLine(
+            $"Redis namespace = {redisInstanceName}"
+        );
+    }
+    catch (Exception exception)
+    {
+        Console.WriteLine(
+            "Invalid Redis configuration."
+        );
+
+        Console.WriteLine(
+            exception.Message
+        );
+
+        Console.WriteLine(
+            "Using in-memory distributed cache."
+        );
+
+        builder.Services.AddDistributedMemoryCache();
+    }
+}
+
+builder.Services.AddScoped<
+    ICacheService,
+    RedisCacheService
+>();
 
 builder.Services.AddScoped<QrCodeService>();
 
