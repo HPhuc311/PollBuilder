@@ -118,7 +118,7 @@ public class VoteController : Controller
             return Json(new
             {
                 success = false,
-                message = "Unable to submit your vote."
+                message = "You can only vote once for this poll."
             });
         }
         return Json(new

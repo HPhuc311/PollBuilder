@@ -44,12 +44,11 @@ public class VotePollHandler : IRequestHandler<VotePollCommand, bool>
             return false;
 
         // 4. Kiểm tra người dùng đã vote chưa (nếu sử dụng)
-        /*
+        
         if (await _voteRepository.HasUserVotedAsync(
             request.PollId,
             request.Fingerprint))
             return false;
-        */
 
         // 5. Tạo Vote mới
         var vote = new Vote
